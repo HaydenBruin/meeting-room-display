@@ -1,17 +1,26 @@
 import React from 'react'
 import styled from 'styled-components'
+import moment from 'moment';
 
-const MeetingList = () => {
+function formatDateTime(dateTime) {
+    return moment.utc(dateTime).local().format('h:mm A');
+    //return moment.utc(dateTime).local().format('M/D/YY h:mm A');
+}
+
+const MeetingList = (props) => {
+    console.log('meeting prop: ', props);
     return (
         <Wrapper>
             <div className="today">
                 <div className="title">Today's Meetings</div>
-                <div className="room">The Distillery</div>
+                <div className="room">{props.room}</div>
             </div>
 
-            <Meeting title="Lorem's Onboarding" time="2:30 - 3:30" />
-            <Meeting title="Sprint Planning - Contact Energy" time="3:30 - 4:00" />
-            <Meeting title="Retro with Contact" time="4:30 - 5:30" />
+            {props.meetings && props.meetings.map((meeting, index) => {
+                return (
+                    <Meeting key={index} title={meeting.subject} time={`${formatDateTime(meeting.start.dateTime)} - ${formatDateTime(meeting.end.dateTime)}`} />
+                )
+            })}
         </Wrapper>
     )
 }

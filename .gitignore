@@ -1,3 +1,8 @@
+# custom
+src/Config.js
+
+# below are all gatsby defaults
+
 # Logs
 logs
 *.log
