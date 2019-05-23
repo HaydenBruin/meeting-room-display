@@ -25,6 +25,7 @@ export async function getEvents(accessToken) {
 
     const events = await client
         .api('/me/calendarView')
+        .header('Prefer','outlook.timezone="New Zealand Standard Time"')
         .select('subject,body,bodyPreview,organizer,attendees,start,end,location')
         .query({
             startDateTime: '2019-05-23T00:00:00.0000000',
