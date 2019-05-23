@@ -104,7 +104,8 @@ class Index extends Component {
             });
         }
         catch (err) {
-            this.props.showError('ERROR', JSON.stringify(err));
+            console.log('ERROR', JSON.stringify(err))
+            //this.showError('ERROR', JSON.stringify(err));
         }
     }
 
