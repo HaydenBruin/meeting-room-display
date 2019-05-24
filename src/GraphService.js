@@ -24,13 +24,14 @@ export async function getEvents(accessToken) {
     const client = getAuthenticatedClient(accessToken);
 
     const events = await client
-        .api('/me/calendarView')
+        .api('/users/hayden.bruin@cucumber.co.nz/calendarView')
         .header('Prefer','outlook.timezone="New Zealand Standard Time"')
         .select('subject,body,bodyPreview,organizer,attendees,start,end,location')
         .query({
-            startDateTime: '2019-05-23T00:00:00.0000000',
-            endDateTime: '2019-05-23T23:59:59.0000000'
+            startDateTime: '2019-05-24T00:00:00.0000000',
+            endDateTime: '2019-05-24T23:59:59.0000000'
         })
+        .orderby('start/dateTime asc')
         .get();
 
     return events;

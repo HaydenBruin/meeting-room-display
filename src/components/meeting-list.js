@@ -2,13 +2,14 @@ import React from 'react'
 import styled from 'styled-components'
 import moment from 'moment';
 
+const format = 'hh:mm A';
 function formatDateTime(dateTime) {
-    return moment.utc(dateTime).local().format('h:mm A');
-    //return moment.utc(dateTime).local().format('M/D/YY h:mm A');
+    return moment(dateTime).format(format);
 }
 
 const MeetingList = (props) => {
     console.log('meeting prop: ', props);
+
     return (
         <Wrapper>
             <div className="today">
@@ -18,7 +19,7 @@ const MeetingList = (props) => {
 
             {props.meetings && props.meetings.map((meeting, index) => {
                 return (
-                    <Meeting key={index} title={meeting.subject} time={`${formatDateTime(meeting.start.dateTime)} - ${formatDateTime(meeting.end.dateTime)}`} />
+                    <Meeting key={index} meeting={meeting} title={meeting.subject} />
                 )
             })}
         </Wrapper>
@@ -26,11 +27,16 @@ const MeetingList = (props) => {
 }
 
 const Meeting = (props) => {
-    const { title, time } = props;
+    const { meeting } = props;
+    const
+        beforeTime = moment(meeting.start.dateTime),
+        afterTime = moment(meeting.end.dateTime),
+        isMeetingActive = moment().isBetween(beforeTime, afterTime);
+        
     return (
-        <MeetingWrapper>
-            <div className="meeting-title">{title}</div>
-            <div className="meeting-time">{time}</div>
+        <MeetingWrapper isMeetingActive={isMeetingActive}>
+            <div className="meeting-title">{meeting.subject}</div>
+            <div className="meeting-time">{`${formatDateTime(meeting.start.dateTime)} - ${formatDateTime(meeting.end.dateTime)}`}</div>
         </MeetingWrapper>
     )
 }
@@ -62,11 +68,11 @@ const Wrapper = styled.div`
 const MeetingWrapper = styled.div`
     display: flex;
     padding: 15px 30px;
-    font-size: 20px;
+    font-size: 18px;
 
     .meeting-title {
         color: #fff;
-        flex: 2;
+        flex: 1;
         text-align: left;
     }
 
@@ -75,6 +81,13 @@ const MeetingWrapper = styled.div`
         color: #ccc;
         text-align: right;
     }
+
+    ${props => props.isMeetingActive ? (`
+        .meeting-title,
+        .meeting-time {
+            color: lightgreen;
+        }
+    `) : null}
 `;
 
 export default MeetingList

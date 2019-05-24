@@ -1,14 +1,26 @@
 import React, { Component, Fragment } from 'react'
+
+// Styled Components
 import styled from 'styled-components'
 import GlobalStyles from '../components/global-styles'
-import Time from '../components/time'
-import MeetingList from '../components/meeting-list'
-import Authentication from '../components/authentication';
-import config from '../Config';
-import { getEvents, getUserDetails } from '../GraphService';
-import { UserAgentApplication } from 'msal';
 
-class Index extends Component {
+// Clock Component
+import Time from '../components/time'
+
+// Meeting Components
+import CurrentMeeting from '../components/current-meeting'
+import MeetingList from '../components/meeting-list'
+
+// API & Authentication
+import config from '../Config'
+import { getEvents, getUserDetails } from '../GraphService'
+import { UserAgentApplication } from 'msal'
+
+// Homepage Component
+export default class Homepage extends Component {
+
+    imageTimer = null;
+
     constructor(props) {
         super(props);
 
@@ -17,6 +29,7 @@ class Index extends Component {
         var user = this.userAgentApplication.getUser();
 
         this.state = {
+            imageCategory: true,
             events: [],
             isAuthenticated: (user !== null),
             user: {},
@@ -50,16 +63,10 @@ class Index extends Component {
 
     async getUserProfile() {
         try {
-            // Get the access token silently
-            // If the cache contains a non-expired token, this function
-            // will just return the cached token. Otherwise, it will
-            // make a request to the Azure OAuth endpoint to get a token
-
-            var accessToken = await this.userAgentApplication.acquireTokenSilent(config.scopes);
+            const accessToken = await this.userAgentApplication.acquireTokenSilent(config.scopes);
 
             if (accessToken) {
-                // Get the user's profile from Graph
-                var user = await getUserDetails(accessToken);
+                const user = await getUserDetails(accessToken);
                 this.setState({
                     isAuthenticated: true,
                     user: {
@@ -94,37 +101,39 @@ class Index extends Component {
 
     async componentDidMount() {
         try {
-            // Get the user's access token
-            var accessToken = await window.msal.acquireTokenSilent(config.scopes);
-            // Get the user's events
-            var events = await getEvents(accessToken);
-            // Update the array of events in state
+            const accessToken = await window.msal.acquireTokenSilent(config.scopes);
+            const events = await getEvents(accessToken);
             this.setState({
                 events: events.value
             });
         }
         catch (err) {
-            console.log('ERROR', JSON.stringify(err))
-            //this.showError('ERROR', JSON.stringify(err));
+            console.warn('Events Error: ', JSON.stringify(err))
         }
+
+        this.imageTimer = setInterval(() => {
+            this.setState(prevState => ({
+                imageCategory: !prevState.imageCategory
+            }))
+        },60000);
     }
-
-
+    componentWillUnmount = () => {
+        clearTimeout(this.imageTimer)
+    }
+    
     render() {
-        console.log(this.state);
         if (!this.state.isAuthenticated) {
             return (
                 <button onClick={() => this.login()}>authenticate ya self</button>
             )
         }
+        const category = this.state.imageCategory ? "nature" : "water";
 
         return (
             <Fragment>
                 <GlobalStyles />
-                <MeetingRoom style={{ backgroundImage: "url(https://source.unsplash.com/random/1920x1080?nature,water)" }}>
-                    <CurrentMeeting>
-
-                    </CurrentMeeting>
+                <MeetingRoom style={{ backgroundImage: `url(https://source.unsplash.com/random/1920x1080?${category})` }}>
+                    <CurrentMeeting />
                     <UpcomingMeetings>
                         <Time />
                         <MeetingList meetings={this.state.events} room={this.state.user.displayName} />
@@ -137,18 +146,14 @@ class Index extends Component {
 
 const MeetingRoom = styled.div`
     display: flex;
+    align-items: flex-end;
     height: 100vh;
     width: 100vw;
     overflow: hidden;
 `;
 
-const CurrentMeeting = styled.div`
-    flex: 1;
-`;
-
 const UpcomingMeetings = styled.div`
     flex: 1;
     background: rgba(0,0,0,0.6);
+    height: 100%;
 `;
-
-export default Index
