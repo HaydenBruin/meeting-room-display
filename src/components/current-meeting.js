@@ -15,7 +15,6 @@ const CurrentMeeting = (props) => {
 }
 const Wrapper = styled.div`
     flex: 1;
-    height: 100%;
     padding-left: 30px;
     padding-bottom: 30px;
     background: rgba(0,0,0,0.3);
