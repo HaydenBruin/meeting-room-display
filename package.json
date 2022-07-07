@@ -16,7 +16,7 @@
         "gatsby-plugin-styled-components": "^3.0.7",
         "gatsby-source-filesystem": "^2.0.37",
         "gatsby-transformer-sharp": "^2.1.19",
-        "moment": "^2.24.0",
+        "moment": "^2.29.4",
         "msal": "^0.2.4",
         "prop-types": "^15.7.2",
         "react": "^16.8.6",
